@@ -11,12 +11,11 @@ class MyException implements Exception {
   }
 }
 
-// Now based on what all types of error code API response might bring;
+// Now based on what all types of error code our http get request might bring;
 // we would create our classes, and have them extended by MyException class;
 // Further, because we're extending a subclass with a superclass which has
-// a parameterised body; we need to take it in child class and pass it to
-// its super-class through super constructor. This is the whole logic behind this
-// all.
+// a parameterised constructor; we need to take it in child class and pass it to
+// its super-class through super constructor. This is where the whole logic  happens.
 
 /// when status code is 500, means this error happens due to
 /// internet connectivity;

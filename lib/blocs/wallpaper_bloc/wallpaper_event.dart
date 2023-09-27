@@ -5,4 +5,7 @@ class FetchSearchWallpaperEvent extends WallpaperEvent {
   String query;
 }
 
-class FetchTrendingWallpaperEvent extends WallpaperEvent {}
+class FetchTrendingWallpaperEvent extends WallpaperEvent {
+  FetchTrendingWallpaperEvent({required this.query});
+  String query;
+}
