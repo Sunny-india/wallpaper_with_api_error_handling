@@ -15,7 +15,7 @@ class APIHelper {
       {required String url, Map<String, String>? mHeader}) async {
     Future mData;
     try {
-      var res = await http.get(Uri.parse(url),
+      http.Response res = await http.get(Uri.parse(url),
           headers: mHeader ??
               {
                 'Authorization':
@@ -26,9 +26,8 @@ class APIHelper {
       throw FetchDataException(body: 'No Internet Available');
     }
     // the catch method is not used here;
-    // Why? becuause this is what we would
-    // call in our bloc. And all these exceptions would be
-    // handled in catch method.
+    // Why? because this is what we would call in our bloc.
+    // And all these exceptions would be handled in catch method.
     return mData;
   }
 

@@ -12,12 +12,15 @@ class WallpaperBloc extends Bloc<WallpaperEvent, WallpaperState> {
       emit(WallpaperLoadingState());
       // per page work can be don here through this way
       // apiHelper.fetchAPI(url: '${searchPhotos}?per_page=20');
-      var res = await apiHelper.fetchAPI(url: searchPhotos);
+      //                         or
+      // apiHelper.fetchAPI(url: '$searchPhotos${event.query}?per_page=20');
+      var res = await apiHelper.fetchAPI(url: "$searchPhotos?per_page=20");
       try {
         emit(
             WallpaperLoadedState(dataPhotoModel: DataPhotoModel.fromJson(res)));
       } catch (e) {
-        // all those exception thrown created in MyException, and thrown in API class would be handled here
+        /// all those exception thrown created in MyException,
+        /// and thrown in API class would be handled here
         emit(WallpaperErrorState(errorMessage: e.toString()));
       }
     });

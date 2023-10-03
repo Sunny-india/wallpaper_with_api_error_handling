@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wallpaper_with_bloc/blocs/wallpaper_bloc/wallpaper_bloc.dart';
+import 'package:wallpaper_with_bloc/blocs/wallpaper_bloc/wallpaper_event.dart';
+import 'package:wallpaper_with_bloc/result_for_search.dart';
 // class WallpaperPage extends StatefulWidget {
 //   const WallpaperPage({super.key});
 //
@@ -391,60 +395,104 @@ class WallpaperPage extends StatefulWidget {
 
 class _WallpaperPageState extends State<WallpaperPage> {
   TextEditingController seachController = TextEditingController();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
     return Scaffold(
       backgroundColor: const Color(0xffDBE0E4),
       body: SafeArea(
-        child: Column(
-          children: [
-            TextFormField(
-              controller: seachController,
-              decoration: InputDecoration(
-                  hintText: 'find Wallpaper',
-                  suffixIcon: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(CupertinoIcons.search),
-                  )),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Best of the month',
-              style: TextStyle(
-                  fontWeight: FontWeight.w700, color: CupertinoColors.black),
-            ),
-            SizedBox(
-              height: size.height * .25,
-              width: size.width,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 12),
-                      height: size.height * .22,
-                      // width: double.infinity,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: index % 2 == 0
-                              ? Colors.teal
-                              : index % 3 == 0
-                                  ? Colors.yellow
-                                  : index % 5 == 0
-                                      ? Colors.deepPurple
-                                      : Colors.lime),
-                      child: Center(
-                          child: Text(
-                        '${index + 1}',
-                      )),
-                    );
-                  }),
-            ),
-          ],
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: [
+              /// asking users to give their input to
+              /// search wallpapers of type from.
+              buildTextFormFieldForWallpaperQuery(),
+              const SizedBox(height: 20),
+              const Text('Best of the month',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: CupertinoColors.black)),
+              buildSizedBoxForWallpapersInListView(size),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  /// asking users to give their input to
+  /// search wallpapers of type from.
+  TextFormField buildTextFormFieldForWallpaperQuery() {
+    return TextFormField(
+      controller: seachController,
+      decoration: InputDecoration(
+          hintText: 'find Wallpaper',
+          suffixIcon: IconButton(
+            onPressed: () {
+              print('SearchPrintedHere');
+              if (formKey.currentState!.validate()) {
+                context.read<WallpaperBloc>().add(FetchSearchWallpaperEvent(
+                    query: seachController.text.toString()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return ResultForSearchPage(
+                      searchedQuery: seachController.text.toString());
+                }));
+              }
+            },
+            icon: const Icon(CupertinoIcons.search),
+          )),
+      validator: (value) {
+        if (value!.isNotEmpty || value != '') {
+          if (value.isValidName() == true) {
+            // print(value);
+
+            return null;
+          } else {
+            return 'Please Enter only Alphabets';
+          }
+        } else {
+          return 'Enter some value';
+        }
+      },
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+    );
+  }
+
+  SizedBox buildSizedBoxForWallpapersInListView(Size size) {
+    return SizedBox(
+      height: size.height * .25,
+      width: size.width,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: 10,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              height: size.height * .22,
+              width: size.width * .93,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: index % 2 == 0
+                      ? Colors.teal
+                      : index % 3 == 0
+                          ? Colors.yellow
+                          : index % 5 == 0
+                              ? Colors.deepPurple
+                              : Colors.lime),
+              child: Center(
+                  child: Text(
+                '${index + 1}',
+              )),
+            );
+          }),
+    );
+  }
+}
+
+extension ValidName on String {
+  bool isValidName() {
+    return RegExp(r'^[a-zA-Z\s]*$').hasMatch(this);
   }
 }
