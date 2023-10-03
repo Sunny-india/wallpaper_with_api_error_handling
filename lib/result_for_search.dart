@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wallpaper_with_bloc/blocs/wallpaper_bloc/wallpaper_state.dart';
+
+import 'blocs/wallpaper_bloc/wallpaper_bloc.dart';
 
 class ResultForSearchPage extends StatefulWidget {
   const ResultForSearchPage({required this.searchedQuery, super.key});
@@ -29,20 +33,36 @@ class _ResultForSearchPageState extends State<ResultForSearchPage> {
         ),
       ),
       body: SafeArea(
-        child: GridView.builder(
-            itemCount: 20,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, crossAxisSpacing: 4, mainAxisSpacing: 2),
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.red.shade100,
-                ),
-                width: size.width * .4,
-              );
-            }),
+        child: BlocBuilder<WallpaperBloc, WallpaperState>(
+            builder: (context, state) {
+          if (state is WallpaperLoadingState) {
+            return CircularProgressIndicator();
+          } else if (state is WallpaperErrorState) {
+            return Center(
+              child: Text(state.errorMessage.toString()),
+            );
+          } else if (state is WallpaperLoadedState) {
+            return GridView.builder(
+                itemCount: 20,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, crossAxisSpacing: 4, mainAxisSpacing: 2),
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.red.shade100,
+                    ),
+                    width: size.width * .4,
+                  );
+                });
+
+            ;
+          } else {
+            return Container();
+          }
+        }),
       ),
     );
   }

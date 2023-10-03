@@ -14,7 +14,8 @@ class WallpaperBloc extends Bloc<WallpaperEvent, WallpaperState> {
       // apiHelper.fetchAPI(url: '${searchPhotos}?per_page=20');
       //                         or
       // apiHelper.fetchAPI(url: '$searchPhotos${event.query}?per_page=20');
-      var res = await apiHelper.fetchAPI(url: "$searchPhotos?per_page=20");
+      var res =
+          await apiHelper.fetchAPI(url: "$basicUrl${event.query}?per_page=20");
       try {
         emit(
             WallpaperLoadedState(dataPhotoModel: DataPhotoModel.fromJson(res)));
